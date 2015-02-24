@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
 from pysqlite2 import dbapi2 as sqlite
+from scipy.spatial.distance import cosine
 
 class Searcher:
 
@@ -18,8 +19,9 @@ class Searcher:
 		return [i[0] for i in im_ids]
 
 
-	def color_hist_distance(hist1, hist2):
-		return np.sum((hist1-hist2)**2)
+    	def color_hist_distance(hist1, hist2):
+       		return cosine(hist1,hist2)
+#		return np.sum((hist1-hist2)**2)
 
 	def candidates_from_colorhist(self, hist, features):
 		result = []

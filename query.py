@@ -39,17 +39,6 @@ def feature_active(name):
     i.e. the feature has been selected via a command line option to be used for processing"""
     return (args.feature == name or args.feature == 'all')
 
-OKGREEN = '\033[92m'
-WARNING = '\033[93m'
-ENDC = '\033[0m'
-def print_matching_tags(candidate_filenames, distances):
-    for i in range(len(candidate_filenames)):
-        filename = candidate_filenames[i]
-        candidate_tags = ft.extract_metadata([filename])
-        matching_tags = ', '.join([OKGREEN+c.upper()+ENDC if c in query_tags[args.query][0] else WARNING+c.lower()+ENDC+' ' for c in candidate_tags[filename][0] ])
-        print ( str(i+1) + ': ' + filename + '\n\td='+str(distances[i]) +'\n\t' + matching_tags)
-
-
 
 # Starting point of the script
 # =======================================
@@ -138,7 +127,8 @@ if __name__ == '__main__':
         fig = plt.figure()
         i = 1
         for im_name in im_list:
-            print i, im_name
+            geotag = ft.extract_exif(im_name)
+            print i, im_name, '\t\tgeotag:', geotag
             im = cv2.imread(im_name, cv2.IMREAD_COLOR)
             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
             plt.subplot(2,5,i)
@@ -153,9 +143,6 @@ if __name__ == '__main__':
 
     # If candidates exists, show the top N candidates
     N = 10
-    
-    # show co-incident tags
-    query_tags = ft.extract_metadata([args.query])
     
     if not sift_candidates == None:
         sift_winners = [search.get_filename(cand[1]) for cand in sift_candidates][0:N]

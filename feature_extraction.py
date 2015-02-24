@@ -100,7 +100,6 @@ def extract_tags(filename):
 def extract_exif(filename):
     # find if there is a geolocation tag, and if so return it.
     # if geolocation was not turned on, return 'no-geotag'
-    print 'filename:', filename 
     with open(filename) as f:
         exif_tags = exifread.process_file(f)
         if 'GPS GPSLongitude' in exif_tags:
@@ -127,7 +126,6 @@ def extract_exif(filename):
             friendly_name += ', ' + str(latitude[0]) + 'd ' + str(latitude[1]) +'\' ' + str(latitude[2]) +'\'\' ' + latRef 
             
             return (longitude, longRef, latitude, latRef, friendly_name)
-            
         
     return 0
     

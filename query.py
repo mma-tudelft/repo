@@ -138,9 +138,10 @@ if __name__ == '__main__':
         fig = plt.figure()
         i = 1
         for im_name in im_list:
+            print i, im_name
             im = cv2.imread(im_name, cv2.IMREAD_COLOR)
             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-            plt.subplot(2,3,i)
+            plt.subplot(2,5,i)
             plt.imshow(im)
             if labels == None:
                 plt.title(i)
@@ -150,48 +151,34 @@ if __name__ == '__main__':
             i += 1
         fig.canvas.set_window_title(title) 
 
-    # If candidates exists, show the top 6 candidates
+    # If candidates exists, show the top N candidates
+    N = 10
     
     # show co-incident tags
     query_tags = ft.extract_metadata([args.query])
     
     if not sift_candidates == None:
-        sift_winners = [search.get_filename(cand[1]) for cand in sift_candidates][0:6]
-        sift_distances = [cand[0] for cand in sift_candidates][0:6]
+        sift_winners = [search.get_filename(cand[1]) for cand in sift_candidates][0:N]
+        sift_distances = [cand[0] for cand in sift_candidates][0:N]
         plot_results(sift_winners, 'SIFT Results')
-        print '\nSIFT candidates:'
-        print 'Tags in query image: ' +''.join([x.upper()+' ' for x in query_tags])
-        print_matching_tags(sift_winners, sift_distances)
 
     if not harris_candidates == None:
-        harris_winners = [search.get_filename(cand[1]) for cand in harris_candidates][0:6]
-        harris_distances = [cand[0] for cand in harris_candidates][0:6]
+        harris_winners = [search.get_filename(cand[1]) for cand in harris_candidates][0:N]
+        harris_distances = [cand[0] for cand in harris_candidates][0:N]
         plot_results(harris_winners, 'Harris Results')
-        print '\nHARRIS candidates:'
-        print 'Tags in query image: ' +''.join([x.upper()+' ' for x in query_tags])
-        print_matching_tags(harris_winners, harris_distances)
 
     if not colorhist_candidates == None:
-        distances = colorhist_candidates[1][0:6]
-        filenames = colorhist_candidates[0][0:6]
+        distances = colorhist_candidates[1][0:N]
+        filenames = colorhist_candidates[0][0:N]
 
         labels = [str(i+1) + ' ' + str(filenames[i]) + ' d: ' + str(distances[i]) for i in range(len(distances))]
         plot_results(filenames, 'Colorhistogram Results', labels = labels)
-        print '\nCOLOR HISTOGRAM candidates:'
-        print 'Tags in query image: ' +''.join([x.upper()+' ' for x in query_tags])
-        print_matching_tags(filenames, distances)
-        
 
     if not geo_candidates == None:
-        filenames = [x[0] for x in geo_candidates][0:6]
-        labels = [x[1] for x in geo_candidates][0:6]
-        plot_results([x[0] for x in geo_candidates][0:6], 'Geodistances Results', labels = labels)
+        filenames = [x[0] for x in geo_candidates][0:N]
+        labels = [x[1] for x in geo_candidates][0:N]
+        plot_results([x[0] for x in geo_candidates][0:N], 'Geodistances Results', labels = labels)
         
-        print '\nGEOTAG candidates:'
-        print 'Tags in query image: ' +''.join([x.upper()+' ' for x in query_tags])
-        print_matching_tags(filenames,labels)
-            
-  
    
     # Add Key event to close the application with the 'q' or 'escape' key
     def onKey(event):

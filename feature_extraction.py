@@ -76,6 +76,7 @@ def get_sift_features(im_list):
     bar.start()
     for im_name in im_list:
         bar.update(count)
+        # load grayscale image
         im = cv2.imread(im_name, 0)
         kp, desc = sift.detectAndCompute(im, None)
         features[im_name] = desc

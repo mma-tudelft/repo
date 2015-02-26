@@ -10,7 +10,7 @@ from scikits.talkbox.features import mfcc
 def extract_metadata(im_list):
 	features = {}
 	for im_name in im_list:
-		tags = extract_tags(im_name)
+		tags = None
 		geotags = extract_exif(im_name)
 		features[im_name] = (tags, geotags)
 		
@@ -87,9 +87,11 @@ def get_sift_features(im_list):
 # extract tags
 def extract_tags(filename):
     try:
+        print 'tags for', filename
         exif_data = pyexiv2.ImageMetadata(filename)
         exif_data.read()
         tags = exif_data['Exif.Photo.UserComment'].value.split(',')
+        print tags
         tags = [t.strip() for t in tags]
         return tags
     except:

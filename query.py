@@ -123,12 +123,12 @@ if __name__ == '__main__':
     plt.axis('off')
     fig.canvas.set_window_title('Query Image') 
 
-    def plot_results(im_list, title, labels=None):
+    def plot_results(im_list, title, distance, labels=None):
         fig = plt.figure()
         i = 1
         for im_name in im_list:
             geotag = ft.extract_exif(im_name)
-            print i, im_name, '\t\tgeotag:', geotag
+            print i, im_name, '\t\tgeotag:', geotag, '\tdist: ', distance[i-1]
             im = cv2.imread(im_name, cv2.IMREAD_COLOR)
             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
             plt.subplot(2,5,i)
@@ -147,24 +147,23 @@ if __name__ == '__main__':
     if not sift_candidates == None:
         sift_winners = [search.get_filename(cand[1]) for cand in sift_candidates][0:N]
         sift_distances = [cand[0] for cand in sift_candidates][0:N]
-        plot_results(sift_winners, 'SIFT Results')
+        plot_results(sift_winners, 'SIFT Results', sift_distances)
 
     if not harris_candidates == None:
         harris_winners = [search.get_filename(cand[1]) for cand in harris_candidates][0:N]
         harris_distances = [cand[0] for cand in harris_candidates][0:N]
-        plot_results(harris_winners, 'Harris Results')
+        plot_results(harris_winners, 'Harris Results', harris_distances)
 
     if not colorhist_candidates == None:
         distances = colorhist_candidates[1][0:N]
         filenames = colorhist_candidates[0][0:N]
 
-        labels = [str(i+1) + ' ' + str(filenames[i]) + ' d: ' + str(distances[i]) for i in range(len(distances))]
-        plot_results(filenames, 'Colorhistogram Results', labels = labels)
+        plot_results(filenames, 'Colorhistogram Results', distances)
 
     if not geo_candidates == None:
         filenames = [x[0] for x in geo_candidates][0:N]
-        labels = [x[1] for x in geo_candidates][0:N]
-        plot_results([x[0] for x in geo_candidates][0:N], 'Geodistances Results', labels = labels)
+        distances = [x[1] for x in geo_candidates][0:N]
+        plot_results([x[0] for x in geo_candidates][0:N], 'Geodistances Results', distances)
         
    
     # Add Key event to close the application with the 'q' or 'escape' key

@@ -30,7 +30,7 @@ parser.add_argument("feature", help="The type of feature to get results on. Chos
 args = parser.parse_args()
 
 # Get file name without extension
-base= args.database.split('.')[0]
+base = os.path.splitext(args.database)[0] 
 
 
 def feature_active(name):

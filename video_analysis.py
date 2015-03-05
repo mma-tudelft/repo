@@ -21,10 +21,6 @@ frame_rate = get_frame_rate(video)
 # create an cv2 capture object
 cap = cv2.VideoCapture(video)
 
-# initialize a figure to do interactive plotting
-plt.figure()
-plt.ion()
-plt.show()
 # store previous frame
 prev_frame = None
 

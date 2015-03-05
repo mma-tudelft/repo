@@ -8,6 +8,11 @@ from scikits.talkbox.features import mfcc
 # Path to video file to analyse 
 video = '../Videos/video_07.mp4'
 
+# starting point
+S = 0 # seconds
+# stop at
+E = 1 # seconds
+
 # Retrieve frame count. We need to add one to the frame count because cv2 somehow 
 # has one extra frame compared to the number returned by avprobe.
 frame_count = get_frame_count(video) + 1
@@ -22,7 +27,11 @@ plt.ion()
 plt.show()
 # store previous frame
 prev_frame = None
-while(cap.isOpened()):
+
+# set video capture object to specific point in time
+cap.set(cv2.CAP_PROP_POS_MSEC, S*1000)
+
+while(cap.isOpened() and cap.get(cv2.CAP_PROP_POS_MSEC) < (E*1000)):
 
     # 
     retVal, frame = cap.read()

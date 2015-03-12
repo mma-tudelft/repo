@@ -43,7 +43,7 @@ def colorhist(im):
     chans = cv2.split(im)
     color_hist = np.zeros((256,len(chans)))
     for i in range(len(chans)):
-        color_hist[:,i] = cv2.calcHist(chans[i], [0], None, [256], [0, 256]).flatten() / (chans[i].shape[0] * chans[i].shape[1])
+        color_hist[:,i] = np.histogram(chans[i], bins=np.arange(256+1))[0]/float((chans[i].shape[0]*chans[i].shape[1]))
     return color_hist
 
 

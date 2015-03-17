@@ -66,7 +66,7 @@ while(cap.isOpened() and cap.get(cv2.CAP_PROP_POS_MSEC) < (int(args.e)*1000)):
 
 # Compare with database
 
-video_types = ('*.mp4', '*.MP4')
+video_types = ('*.mp4', '*.MP4', '.*avi')
 audio_types = ('*.wav', '*.WAV')
 
 # grab all video file names

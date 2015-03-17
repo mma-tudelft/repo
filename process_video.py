@@ -16,15 +16,9 @@ import db_index_video
 
 
 
-def frame_to_audio(frame_nbr, frame_rate, fs, audio):
-    start_index = frame_nbr / frame_rate * fs
-    end_index = (frame_nbr+1) / frame_rate * fs
-    return audio[start_index:end_index]
-
 def create_database():
     # DATABASE Creating and insertion
     # If the database already exsists, we can remove it and recreate it, or we can just insert new data.
-    # db_name = args.prefix + base + '.db'
     db_name = 'db/video_database.db'
 
     # check if database already exists
@@ -128,7 +122,7 @@ parser.add_argument("training_set", help="Path to training videos and wav files"
 args = parser.parse_args()
 
 
-video_types = ('*.mp4', '*.MP4')
+video_types = ('*.mp4', '*.MP4', '*.avi')
 audio_types = ('*.wav', '*.WAV')
 
 

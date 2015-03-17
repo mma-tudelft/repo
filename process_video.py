@@ -85,23 +85,21 @@ def process_videos(video_list, indx):
             ret, frame = cap.read()
             if frame == None:
                 break
-            audio_frame = frame_to_audio(frame_nbr, frame_rate, fs, wav_data)
+            #audio_frame = frame_to_audio(frame_nbr, frame_rate, fs, wav_data)
 
             # check if audio frame is long enough for mfcc transformation
-            if len(audio_frame) >= 256:
-                power = np.sum(audio_frame**2)
-                audio_powers.append(power)
-                ceps, mspec, spec = ft.extract_mfcc(audio_frame, fs)
-                plt.cla()
-                plt.specgram(spec)
-                plt.draw()
-                mfccs.append(ceps)
+            #if len(audio_frame) >= 256:
+            #    power = np.sum(audio_frame**2)
+            #    audio_powers.append(power)
+            #    ceps, mspec, spec = ft.extract_mfcc(audio_frame, fs)
+            #    mfccs.append(ceps)
                 
             # calculate sum of differences
             if not prev_frame == None:
-                diff = np.absolute(prev_frame - frame)
-                sum = np.sum(diff.flatten()) / (diff.shape[0]*diff.shape[1]*diff.shape[2])
-                sum_of_differences.append(sum)
+                tdiv = temporal_diff(prev_frame, frame)
+                #diff = np.absolute(prev_frame - frame)
+                #sum = np.sum(diff.flatten()) / (diff.shape[0]*diff.shape[1]*diff.shape[2])
+                sum_of_differences.append(tdiv)
 
             colorhists.append(ft.colorhist(frame))
             prev_frame = frame
@@ -114,8 +112,8 @@ def process_videos(video_list, indx):
         # colhist = descr['colhist'] # Nx3x256 np array
         # tempdif = descr['tempdif'] # Nx1 np array
         descr = {}
-        descr['mfcc'] = np.array(mfccs)
-        descr['audio'] = np.array(audio_powers)
+        #descr['mfcc'] = np.array(mfccs)
+        #descr['audio'] = np.array(audio_powers)
         descr['colhist'] = np.array(colorhists)
         descr['tempdif'] = np.array(sum_of_differences)
         indx.add_to_index(video,descr)

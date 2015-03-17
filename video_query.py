@@ -6,6 +6,7 @@ import cv2
 import glob
 from video_tools import *
 import feature_extraction as ft    
+import sys
     
 parser = argparse.ArgumentParser(description="Video Query tool")
 parser.add_argument("training_set", help="Path to training videos and wav files")
@@ -59,6 +60,23 @@ for type_ in video_types:
 db_name = 'db/video_database.db'
 search = video_search.Searcher(db_name)
 
+def sliding_window(x, w, compare_func):
+    """ Slide window w over signal x. 
+    """
+    wl = len(w)
+    minimum = sys.maxint
+    for i in range(len(x) - wl):
+        diff = compare_func(w, x[i:(i+wl)]
+        if diff<minimum:
+            minimum = diff
+            frame   = i
+    return frame, minimum
+   
+def euclidean_norm(x,y):
+    mean_x = np.mean(x, axis=0)
+    mean_y = np.mean(y, axis=0)
+    return np.linalg.norm(x-y)
+
 for video in video_list:
     print video
     dur = get_duration(video, util='ffprobe')
@@ -69,11 +87,5 @@ for video in video_list:
         x,w = w,x
     print 'x:', x.shape 
     print 'w:', w.shape 
-    wl = len(w)
-    minimum = 9999
-    for i in range(len(x) - wl):
-        diff = np.linalg.norm(w-x[i:(i+wl)])
-        if diff<minimum:
-            minimum = diff
-            frame   = i
-    print minimum
+    print sliding_window(x,w, euclidean_norm)
+ 

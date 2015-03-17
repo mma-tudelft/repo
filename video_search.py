@@ -29,7 +29,7 @@ class Searcher:
 
     def get_features_for(self, vid_name, feature):
         vidid = self.con.execute("select rowid from vidlist where filename='%s'" % vid_name).fetchone()
-        query = "select hists from "+feature+" where vidid="+str(vidid[0])
+        query = "select features from "+feature+" where vidid="+str(vidid[0])
         s = self.con.execute(query).fetchone()
 		# use pickle to decode NumPy arrays from string
         return pickle.loads(str(s[0]))

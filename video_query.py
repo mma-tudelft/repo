@@ -4,9 +4,11 @@ import video_search
 import numpy as np
 import cv2
 import glob
+from scipy.io import wavfile
 from video_tools import *
 import feature_extraction as ft    
 import sys
+import os
 from video_features import *
    
 features = ['colorhists', 'tempdiffs', 'audiopowers', 'mfccs']
@@ -29,9 +31,15 @@ if not float(args.s) < float(args.e) < q_duration:
     print 'Timestamp for end of query set to:', q_duration
     args.e = q_duration
 
+if args.f == features[2] or args.f == features[3]:
+    filename, fileExtension = os.path.splitext(args.query)
+    audio = filename + '.wav'
+    fs, wav_data = wavfile.read(audio)
+
 cap.set(cv2.CAP_PROP_POS_MSEC, int(args.s)*1000)
 query_features = []
 prev_frame = None
+frame_nbr = int(args.s)*frame_rate
 while(cap.isOpened() and cap.get(cv2.CAP_PROP_POS_MSEC) < (int(args.e)*1000)):
     ret, frame = cap.read()
     if frame == None:
@@ -40,11 +48,20 @@ while(cap.isOpened() and cap.get(cv2.CAP_PROP_POS_MSEC) < (int(args.e)*1000)):
     if args.f == features[0]: 
         h = ft.colorhist(frame)
     elif args.f == features[1]:
-        h = temporal_diff(prev_frame, frame)
+        h = temporal_diff(prev_frame, frame, 10)
+    elif args.f == features[2] or args.f == features[3]:
+        audio_frame = frame_to_audio(frame_nbr, frame_rate, fs, wav_data)
+        if args.f == features[2]:
+            h = np.var(audio_frame)
+            print h
+        elif args.f == features[3]:
+            h, mspec, spec = ft.extract_mfcc(audio_frame, fs)
+            
     
     if h != None:
         query_features.append(h)
     prev_frame = frame
+    frame_nbr += 1
 
 
 # Compare with database
@@ -73,23 +90,36 @@ def sliding_window(x, w, compare_func):
             frame   = i
     return frame, minimum
    
+def euclidean_norm_mean(x,y):
+    x = np.mean(x, axis=0)
+    y = np.mean(y, axis=0)
+    return np.linalg.norm(x-y)
+
 def euclidean_norm(x,y):
-    mean_x = np.mean(x, axis=0)
-    mean_y = np.mean(y, axis=0)
     return np.linalg.norm(x-y)
 
 for video in video_list:
     print video
     dur = get_duration(video)
+    w = np.array(query_features)
     if args.f == features[0]: 
         x = search.get_colorhists_for(video)
+        frame, score = sliding_window(x,w, euclidean_norm_mean)
     elif args.f == features[1]:
         x = search.get_temporaldiffs_for(video)
-    w = np.array(query_features)
+        frame, score = sliding_window(x,w, euclidean_norm)
+    elif args.f == features[2]:
+        x = search.get_audiopowers_for(video)
+        print x[0:100]
+        frame, score = sliding_window(x,w, euclidean_norm)
+    elif args.f == features[3]:
+        x = search.get_mfccs_for(video)
+        frame, score = sliding_window(x,w, euclidean_norm_mean)
+        
+        
     if dur < q_duration:
         print 'Error: query is longer than database video'
         sys.exit()
-    frame, score = sliding_window(x,w, euclidean_norm)
     print frame/frame_rate, score
 
  

@@ -32,4 +32,9 @@ def get_frame_count_audio(video, util='avprobe'):
     result = re.search(pattern, info, re.DOTALL)
     return int(result.group(1))
 
+def frame_to_audio(frame_nbr, frame_rate, fs, audio):
+    start_index = frame_nbr / frame_rate * fs
+    end_index = (frame_nbr+1) / frame_rate * fs
+    return audio[start_index:end_index]
+
 

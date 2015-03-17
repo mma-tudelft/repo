@@ -86,18 +86,18 @@ def process_videos(video_list, indx):
             ret, frame = cap.read()
             if frame == None:
                 break
-            #audio_frame = frame_to_audio(frame_nbr, frame_rate, fs, wav_data)
+            audio_frame = frame_to_audio(frame_nbr, frame_rate, fs, wav_data)
 
             # check if audio frame is long enough for mfcc transformation
-            #if len(audio_frame) >= 256:
-            #    power = np.sum(audio_frame**2)
-            #    audio_powers.append(power)
-            #    ceps, mspec, spec = ft.extract_mfcc(audio_frame, fs)
-            #    mfccs.append(ceps)
+            if len(audio_frame) >= 256:
+                power = np.var(audio_frame)
+                audio_powers.append(power)
+                ceps, mspec, spec = ft.extract_mfcc(audio_frame, fs)
+                mfccs.append(ceps)
                 
             # calculate sum of differences
             if not prev_frame == None:
-                tdiv = temporal_diff(prev_frame, frame)
+                tdiv = temporal_diff(prev_frame, frame, 10)
                 #diff = np.absolute(prev_frame - frame)
                 #sum = np.sum(diff.flatten()) / (diff.shape[0]*diff.shape[1]*diff.shape[2])
                 sum_of_differences.append(tdiv)

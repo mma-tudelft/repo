@@ -17,16 +17,16 @@ class Indexer(object):
         self.con.execute('create table vidlist(filename)')
         self.con.execute('create index vid_idx on vidlist(filename)')
         
-        self.con.execute('create table colorhists(vidid,hists)')
+        self.con.execute('create table colorhists(vidid,features)')
         self.con.execute('create index colorhists_vidid_idx on colorhists(vidid)')
         
-        self.con.execute('create table tempdiffs(vidid, diffs)')
+        self.con.execute('create table tempdiffs(vidid, features)')
         self.con.execute('create index tempdiffs_vidid_idx on tempdiffs(vidid)')
         
-        self.con.execute('create table mfccs(vidid, coeffs)')
+        self.con.execute('create table mfccs(vidid, features)')
         self.con.execute('create index mfccs_vidid_idx on mfccs(vidid)')
         
-        self.con.execute('create table audiopowers(vidid, powers)')
+        self.con.execute('create table audiopowers(vidid, features)')
         self.con.execute('create index audiopowers_vidid_idx on audiopowers(vidid)')
             
     def add_to_index(self, vidname, descr):
@@ -46,10 +46,10 @@ class Indexer(object):
 
         # store descriptor per video
         # use pickle to encode NumPy arrays as strings
-        self.con.execute("insert into colorhists(vidid,hists) values (?,?)", (vidid,pickle.dumps(colhist)))
-        self.con.execute("insert into tempdiffs(vidid,diffs) values (?,?)", (vidid,pickle.dumps(tempdif)))
-        self.con.execute("insert into mfccs(vidid,coeffs) values (?,?)", (vidid,pickle.dumps(mfccs)))
-        self.con.execute("insert into audiopowers(vidid,powers) values (?,?)", (vidid,pickle.dumps(audio)))
+        self.con.execute("insert into colorhists(vidid,features) values (?,?)", (vidid,pickle.dumps(colhist)))
+        self.con.execute("insert into tempdiffs(vidid,features) values (?,?)", (vidid,pickle.dumps(tempdif)))
+        self.con.execute("insert into mfccs(vidid,features) values (?,?)", (vidid,pickle.dumps(mfccs)))
+        self.con.execute("insert into audiopowers(vidid,features) values (?,?)", (vidid,pickle.dumps(audio)))
         
     def get_id(self, vidname):
         """ Get an entry id and add if not present. """

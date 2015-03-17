@@ -27,11 +27,12 @@ args = parser.parse_args()
 cap = cv2.VideoCapture(args.query)
 frame_count = get_frame_count(args.query) + 1
 frame_rate = get_frame_rate(args.query )
-q_duration = get_duration(args.query) 
+q_duration = float(args.e) - float(args.s)
+q_total = get_duration(args.query)
 
-if not float(args.s) < float(args.e) < q_duration:
+if not float(args.s) < float(args.e) < q_total:
     print 'Timestamp for end of query set to:', q_duration
-    args.e = q_duration
+    args.e = q_total
 
 # Load audio data if necessary
 if args.f == features[2] or args.f == features[3]:
@@ -68,7 +69,7 @@ while(cap.isOpened() and cap.get(cv2.CAP_PROP_POS_MSEC) < (int(args.e)*1000)):
 
 # Compare with database
 
-video_types = ('*.mp4', '*.MP4', '.*avi')
+video_types = ('*.mp4', '*.MP4', '*.avi')
 audio_types = ('*.wav', '*.WAV')
 
 # grab all video file names
@@ -106,7 +107,12 @@ def euclidean_norm(x,y):
 # Loop over all videos in the database and compare frame by frame
 for video in video_list:
     print video
-    dur = get_duration(video)
+
+    if get_duration(video) < q_duration:
+        print get_duration(video), q_duration
+        print 'Error: query is longer than database video'
+        continue
+
     w = np.array(query_features)
     if args.f == features[0]: 
         x = search.get_colorhists_for(video)
@@ -122,9 +128,7 @@ for video in video_list:
         frame, score = sliding_window(x,w, euclidean_norm_mean)
         
         
-    if dur < q_duration:
-        print 'Error: query is longer than database video'
-        sys.exit()
     print 'Best match at:', frame/frame_rate, 'seconds, with score of:', score
+    print ''
 
  

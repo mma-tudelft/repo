@@ -15,10 +15,23 @@ class Searcher:
 		s = self.con.execute("select filename from vidlist where rowid='%d'" % vidid).fetchone()
 		return s[0]
 
-    def get_features_for(self, vid_name):
-        t = self.con.execute("select vidid from colorhists").fetchone()
+    def get_colorhists_for(self, vid_name):
+        return self.get_features_for(vid_name, "colorhists")
+
+    def get_temporaldiffs_for(self, vid_name):
+        return self.get_features_for(vid_name, "tempdiffs")
+
+    def get_audiopowers_for(self, vid_name):
+        return self.get_features_for(vid_name, "audiopowers")
+
+    def get_mfccs_for(self, vid_name):
+        return self.get_features_for(vid_name, "mfccs")
+
+    def get_features_for(self, vid_name, feature):
         vidid = self.con.execute("select rowid from vidlist where filename='%s'" % vid_name).fetchone()
-        query = "select hists from colorhists where vidid="+str(vidid[0])
+        query = "select hists from "+feature+" where vidid="+str(vidid[0])
         s = self.con.execute(query).fetchone()
 		# use pickle to decode NumPy arrays from string
         return pickle.loads(str(s[0]))
+
+ 

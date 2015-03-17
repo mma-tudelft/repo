@@ -11,6 +11,7 @@ import glob
 import feature_extraction as ft    
 from scipy.io.wavfile import read
 from video_tools import *
+from video_features import *
 import db_index_video
 
 
@@ -112,8 +113,8 @@ def process_videos(video_list, indx):
         # colhist = descr['colhist'] # Nx3x256 np array
         # tempdif = descr['tempdif'] # Nx1 np array
         descr = {}
-        #descr['mfcc'] = np.array(mfccs)
-        #descr['audio'] = np.array(audio_powers)
+        descr['mfcc'] = np.array(mfccs)
+        descr['audio'] = np.array(audio_powers)
         descr['colhist'] = np.array(colorhists)
         descr['tempdif'] = np.array(sum_of_differences)
         indx.add_to_index(video,descr)

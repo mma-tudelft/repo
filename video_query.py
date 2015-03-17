@@ -10,7 +10,9 @@ import feature_extraction as ft
 import sys
 import os
 from video_features import *
-   
+  
+
+ 
 features = ['colorhists', 'tempdiffs', 'audiopowers', 'mfccs']
  
 parser = argparse.ArgumentParser(description="Video Query tool")
@@ -31,15 +33,16 @@ if not float(args.s) < float(args.e) < q_duration:
     print 'Timestamp for end of query set to:', q_duration
     args.e = q_duration
 
+# Load audio data if necessary
 if args.f == features[2] or args.f == features[3]:
     filename, fileExtension = os.path.splitext(args.query)
     audio = filename + '.wav'
     fs, wav_data = wavfile.read(audio)
 
-cap.set(cv2.CAP_PROP_POS_MSEC, int(args.s)*1000)
 query_features = []
 prev_frame = None
 frame_nbr = int(args.s)*frame_rate
+cap.set(cv2.CAP_PROP_POS_MSEC, int(args.s)*1000)
 while(cap.isOpened() and cap.get(cv2.CAP_PROP_POS_MSEC) < (int(args.e)*1000)):
     ret, frame = cap.read()
     if frame == None:
@@ -53,7 +56,6 @@ while(cap.isOpened() and cap.get(cv2.CAP_PROP_POS_MSEC) < (int(args.e)*1000)):
         audio_frame = frame_to_audio(frame_nbr, frame_rate, fs, wav_data)
         if args.f == features[2]:
             h = np.var(audio_frame)
-            print h
         elif args.f == features[3]:
             h, mspec, spec = ft.extract_mfcc(audio_frame, fs)
             
@@ -80,6 +82,8 @@ search = video_search.Searcher(db_name)
 
 def sliding_window(x, w, compare_func):
     """ Slide window w over signal x. 
+
+        compare_func should be a functions that calculates some score between w and a chunk of x
     """
     wl = len(w)
     minimum = sys.maxint
@@ -98,6 +102,8 @@ def euclidean_norm_mean(x,y):
 def euclidean_norm(x,y):
     return np.linalg.norm(x-y)
 
+
+# Loop over all videos in the database and compare frame by frame
 for video in video_list:
     print video
     dur = get_duration(video)
@@ -110,7 +116,6 @@ for video in video_list:
         frame, score = sliding_window(x,w, euclidean_norm)
     elif args.f == features[2]:
         x = search.get_audiopowers_for(video)
-        print x[0:100]
         frame, score = sliding_window(x,w, euclidean_norm)
     elif args.f == features[3]:
         x = search.get_mfccs_for(video)
@@ -120,6 +125,6 @@ for video in video_list:
     if dur < q_duration:
         print 'Error: query is longer than database video'
         sys.exit()
-    print frame/frame_rate, score
+    print 'Best match at:', frame/frame_rate, 'seconds, with score of:', score
 
  

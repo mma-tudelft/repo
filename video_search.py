@@ -27,6 +27,9 @@ class Searcher:
     def get_mfccs_for(self, vid_name):
         return self.get_features_for(vid_name, "mfccs")
 
+    def get_chdiffs_for(self, vid_name):
+        return self.get_features_for(vid_name, "chdiffs")
+
     def get_features_for(self, vid_name, feature):
         vidid = self.con.execute("select rowid from vidlist where filename='%s'" % vid_name).fetchone()
         query = "select features from "+feature+" where vidid="+str(vidid[0])

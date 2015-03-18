@@ -76,7 +76,9 @@ def process_videos(video_list, indx):
         sum_of_differences = []
         audio_powers = []
         mfccs = []
+        colorhist_diffs = []
 
+        prev_colorhist = None
         prev_frame = None
         frame_nbr = 0
         while(cap.isOpened()):
@@ -87,7 +89,7 @@ def process_videos(video_list, indx):
 
             # check if audio frame is long enough for mfcc transformation
             if len(audio_frame) >= 256:
-                power = np.var(audio_frame)
+                power = np.mean(audio_frame**2)
                 audio_powers.append(power)
                 ceps, mspec, spec = ft.extract_mfcc(audio_frame, fs)
                 mfccs.append(ceps)
@@ -98,8 +100,12 @@ def process_videos(video_list, indx):
                 #diff = np.absolute(prev_frame - frame)
                 #sum = np.sum(diff.flatten()) / (diff.shape[0]*diff.shape[1]*diff.shape[2])
                 sum_of_differences.append(tdiv)
-
-            colorhists.append(ft.colorhist(frame))
+            colorhist = ft.colorhist(frame)
+            colorhists.append(colorhist)
+            if not prev_colorhist == None:
+                ch_diff = colorhist_diff(prev_colorhist, colorhist)
+                colorhist_diffs.append(ch_diff)
+            prev_colorhist = colorhist
             prev_frame = frame
             frame_nbr += 1
         print 'end:', frame_nbr
@@ -108,12 +114,13 @@ def process_videos(video_list, indx):
         # mfccs = descr['mfcc'] # Nx13 np array (or however many mfcc coefficients there are)
         # audio = descr['audio'] # Nx1 np array
         # colhist = descr['colhist'] # Nx3x256 np array
-        # tempdif = descr['tempdif'] # Nx1 np array
+        # tempdif = descr['tempdiff'] # Nx1 np array
         descr = {}
         descr['mfcc'] = np.array(mfccs)
         descr['audio'] = np.array(audio_powers)
         descr['colhist'] = np.array(colorhists)
-        descr['tempdif'] = np.array(sum_of_differences)
+        descr['tempdiff'] = np.array(sum_of_differences)
+        descr['chdiff'] = np.array(colorhist_diffs)
         indx.add_to_index(video,descr)
         print 'added ' + video + ' to database'
     indx.db_commit()

@@ -13,7 +13,7 @@ from video_features import *
   
 
  
-features = ['colorhists', 'tempdiffs', 'audiopowers', 'mfccs']
+features = ['colorhists', 'tempdiffs', 'audiopowers', 'mfccs', 'colorhistdiffs']
  
 parser = argparse.ArgumentParser(description="Video Query tool")
 parser.add_argument("training_set", help="Path to training videos and wav files")
@@ -42,6 +42,7 @@ if args.f == features[2] or args.f == features[3]:
 
 query_features = []
 prev_frame = None
+prev_colorhist = None
 frame_nbr = int(args.s)*frame_rate
 cap.set(cv2.CAP_PROP_POS_MSEC, int(args.s)*1000)
 while(cap.isOpened() and cap.get(cv2.CAP_PROP_POS_MSEC) < (int(args.e)*1000)):
@@ -56,9 +57,14 @@ while(cap.isOpened() and cap.get(cv2.CAP_PROP_POS_MSEC) < (int(args.e)*1000)):
     elif args.f == features[2] or args.f == features[3]:
         audio_frame = frame_to_audio(frame_nbr, frame_rate, fs, wav_data)
         if args.f == features[2]:
-            h = np.var(audio_frame)
+            h = np.mean(audio_frame**2)
+            print h
         elif args.f == features[3]:
             h, mspec, spec = ft.extract_mfcc(audio_frame, fs)
+    elif args.f == features[4]:
+        colorhist = ft.colorhist(frame)
+        h = colorhist_diff(prev_colorhist, colorhist)
+        prev_colorhist = colorhist
             
     
     if h != None:
@@ -122,10 +128,14 @@ for video in video_list:
         frame, score = sliding_window(x,w, euclidean_norm)
     elif args.f == features[2]:
         x = search.get_audiopowers_for(video)
+        print x
         frame, score = sliding_window(x,w, euclidean_norm)
     elif args.f == features[3]:
         x = search.get_mfccs_for(video)
         frame, score = sliding_window(x,w, euclidean_norm_mean)
+    elif args.f == features[4]:
+        x = search.get_chdiffs_for(video)
+        frame, score = sliding_window(x,w, euclidean_norm)
         
         
     print 'Best match at:', frame/frame_rate, 'seconds, with score of:', score

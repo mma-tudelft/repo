@@ -10,7 +10,9 @@ def temporal_diff(frame1, frame2, threshold=50):
 
 
 def colorhist_diff(hist1, hist2):
-    diff = np.abs(h1 - h2)
+    if hist1 == None or hist2 == None:
+        return None
+    diff = np.abs(hist1 - hist2)
     return np.sum(diff)
 
 

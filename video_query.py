@@ -127,7 +127,6 @@ for video in video_list:
         frame, score = sliding_window(x,w, euclidean_norm)
     elif args.f == features[2]:
         x = search.get_audiopowers_for(video)
-        print x
         frame, score = sliding_window(x,w, euclidean_norm)
     elif args.f == features[3]:
         x = search.get_mfccs_for(video)

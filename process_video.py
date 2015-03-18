@@ -21,6 +21,9 @@ def create_database():
     # If the database already exsists, we can remove it and recreate it, or we can just insert new data.
     db_name = 'db/video_database.db'
 
+    if not os.path.exists('db'):
+        os.makedirs('db')
+
     # check if database already exists
     new = False
     if os.path.isfile(db_name):

@@ -58,7 +58,6 @@ while(cap.isOpened() and cap.get(cv2.CAP_PROP_POS_MSEC) < (int(args.e)*1000)):
         audio_frame = frame_to_audio(frame_nbr, frame_rate, fs, wav_data)
         if args.f == features[2]:
             h = np.mean(audio_frame**2)
-            print h
         elif args.f == features[3]:
             h, mspec, spec = ft.extract_mfcc(audio_frame, fs)
     elif args.f == features[4]:

@@ -22,7 +22,7 @@ def classifyMusic(genres, data, trainingFactor):
     rIdx = range(dSize)
     shuffle(rIdx)
     trainIdx = rIdx[0:int(dSize*trainingFactor)]
-    testIdx  = rIdx[int(dSize*0.8):]
+    testIdx  = rIdx[int(dSize*trainingFactor):]
     
     gModel= list()
     for g in range(len(genres)):
@@ -48,7 +48,7 @@ def classifyMusic(genres, data, trainingFactor):
             res = dot(res, transpose(diff))
             unll[v] = res         
 
-          meanUNLL[gs][t][m] = median(unll)
+          meanUNLL[gs][t][m] = mean(unll)
         guess[gs][t] = argmin(meanUNLL[gs][t])
 
     [cfm, acc] = createConfusionMatrix(guess)
@@ -102,7 +102,7 @@ def createConfusionMatrix(resultMat):
           acc += 1
     return confMat, float(acc)/(rows*cols)
  
-def randomFoldCrossValidation(numTrials = 10, trainingFactor = 1):
+def randomFoldCrossValidation(numTrials = 10, trainingFactor = 0.8):
     dataDir = "Music_Features"
     genres = ['classical','country','jazz','pop','rock','techno']
     

@@ -112,7 +112,6 @@ def euclidean_norm(x,y):
 # Loop over all videos in the database and compare frame by frame
 for video in video_list:
     print video
-
     if get_duration(video) < q_duration:
         print get_duration(video), q_duration
         print 'Error: query is longer than database video'
@@ -130,7 +129,8 @@ for video in video_list:
         frame, score = sliding_window(x,w, euclidean_norm)
     elif args.f == features[3]:
         x = search.get_mfccs_for(video)
-        frame, score = sliding_window(x,w, euclidean_norm_mean)
+        #frame, score = sliding_window(x,w, euclidean_norm_mean)
+        frame, score = sliding_window(np.mean(x,1),np.mean(w,1), euclidean_norm_mean)
     elif args.f == features[4]:
         x = search.get_chdiffs_for(video)
         frame, score = sliding_window(x,w, euclidean_norm)

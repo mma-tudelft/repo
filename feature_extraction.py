@@ -5,7 +5,7 @@ import progressbar
 import harris
 import exifread
 import pyexiv2
-from scikits.talkbox.features import mfcc
+from mfcc_talkbox import mfcc
 
 def extract_metadata(im_list):
 	features = {}
@@ -130,11 +130,14 @@ def extract_exif(filename):
             return (longitude, longRef, latitude, latRef, friendly_name)
         
     return 0
+
+    
     
 def extract_mfcc(audio_samples, fs):
     # find the smallest non-zero sample in both channels
     #nonzero = min(min([abs(x) for x in audio_samples[:,0] if abs(x) > 0]), min([abs(x) for x in audio_samples[:,1] if abs(x) > 0]))
+    window_time_length=0.01
+    window_samples_length=int(fs*window_time_length)
     nonzero = 1
     audio_samples[audio_samples==0] = nonzero
-    return mfcc(audio_samples, fs=fs)
-    
+    return mfcc(audio_samples, fs=fs,nwin=window_samples_length, nfft=window_samples_length*2)

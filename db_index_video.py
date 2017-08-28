@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
 from pysqlite2 import dbapi2 as sqlite
+from os.path import basename
 
 class Indexer(object):
 
@@ -73,10 +74,10 @@ class Indexer(object):
     def get_id(self, vidname):
         """ Get an entry id and add if not present. """
 
-        cur = self.con.execute("select rowid from vidlist where filename='%s'" % vidname)
+        cur = self.con.execute("select rowid from vidlist where filename='%s'" % basename(vidname))
         res = cur.fetchone()
         if res == None:
-            cur = self.con.execute("insert into vidlist(filename) values ('%s')" % vidname)
+            cur = self.con.execute("insert into vidlist(filename) values ('%s')" % basename(vidname))
             return cur.lastrowid
         else:
             return res[0]

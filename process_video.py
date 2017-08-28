@@ -88,7 +88,7 @@ def process_videos(video_list, indx):
             audio_frame = frame_to_audio(frame_nbr, frame_rate, fs, wav_data)
 
             # check if audio frame is long enough for mfcc transformation
-            if len(audio_frame) >= 256:
+            if len(audio_frame) >= int(0.01*fs):
                 power = np.mean(audio_frame**2)
                 audio_powers.append(power)
                 ceps, mspec, spec = ft.extract_mfcc(audio_frame, fs)

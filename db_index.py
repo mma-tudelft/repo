@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
 from pysqlite2 import dbapi2 as sqlite
+from os.path import basename
 
 class Indexer(object):
 
@@ -72,16 +73,16 @@ class Indexer(object):
     def is_indexed(self, imname):
         """ Returns True is imname has been indexed. """
 
-        im = self.con.execute("select rowid from imlist where filename='%s'" % imname).fetchone()
+        im = self.con.execute("select rowid from imlist where filename='%s'" % basename(imname)).fetchone()
         return im != None
 
     def get_id(self, imname):
         """ Get an entry id and add if not present. """
 
-        cur = self.con.execute("select rowid from imlist where filename='%s'" % imname)
+        cur = self.con.execute("select rowid from imlist where filename='%s'" % basename(imname))
         res = cur.fetchone()
         if res == None:
-            cur = self.con.execute("insert into imlist(filename) values ('%s')" % imname)
+            cur = self.con.execute("insert into imlist(filename) values ('%s')" % basename(imname))
             return cur.lastrowid
         else:
             return res[0]

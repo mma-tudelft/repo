@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
 from pysqlite2 import dbapi2 as sqlite
+from os.path import basename
 
 class Searcher:
 
@@ -31,7 +32,7 @@ class Searcher:
         return self.get_features_for(vid_name, "chdiffs")
 
     def get_features_for(self, vid_name, feature):
-        vidid = self.con.execute("select rowid from vidlist where filename='%s'" % vid_name).fetchone()
+        vidid = self.con.execute("select rowid from vidlist where filename='%s'" % basename(vid_name)).fetchone()
         query = "select features from "+feature+" where vidid="+str(vidid[0])
         s = self.con.execute(query).fetchone()
 		# use pickle to decode NumPy arrays from string

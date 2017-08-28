@@ -23,6 +23,10 @@ parser.add_argument("-e", help="Timestamp for end of query in seconds", default=
 parser.add_argument("-f", help="Select features "+str(features)+" for the query ", default='colorhists')
 args = parser.parse_args()
 
+if not args.f in features:
+    print "Requested feature '"+args.f+"' is not a valid feature. Please use one of the following features:"
+    print features
+    
 
 cap = cv2.VideoCapture(args.query)
 frame_count = get_frame_count(args.query) + 1
@@ -130,7 +134,8 @@ for video in video_list:
     elif args.f == features[3]:
         x = search.get_mfccs_for(video)
         #frame, score = sliding_window(x,w, euclidean_norm_mean)
-        frame, score = sliding_window(np.mean(x,1),np.mean(w,1), euclidean_norm_mean)
+        availableLength= min(x.shape[1],w.shape[1])
+        frame, score = sliding_window(x[:,:availableLength,:],w[:,:availableLength,:], euclidean_norm_mean)
     elif args.f == features[4]:
         x = search.get_chdiffs_for(video)
         frame, score = sliding_window(x,w, euclidean_norm)

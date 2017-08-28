@@ -2,6 +2,7 @@ import pickle
 import numpy as np
 from pysqlite2 import dbapi2 as sqlite
 from scipy.spatial.distance import cosine
+from os.path import basename
 
 class Searcher:
 
@@ -54,8 +55,7 @@ class Searcher:
 
 	def get_colorhist(self, imname):
 		""" Return the color histogram for an image. """
-		im_id = self.con.execute(
-				"select rowid from imlist where filename='%s'" % imname).fetchone()
+		im_id = get_imid(imname)
 		s = self.con.execute(
 				"select hist from colorhists where rowid='%d'" % im_id).fetchone()
 
@@ -67,8 +67,7 @@ class Searcher:
 	def get_imhistogram(self, type, imname):
 		""" Return the word histogram for an image. """
 
-		im_id = self.con.execute(
-				"select rowid from imlist where filename='%s'" % imname).fetchone()
+		im_id = get_imid(imname)
 		s = self.con.execute(
 				"select histogram from "+type+"_imhistograms where rowid='%d'" % im_id).fetchone()
 
@@ -109,8 +108,10 @@ class Searcher:
 			#return a sorted list of distances and databse ids
 		matchscores.sort()
 		return matchscores
-
-
+    
+	def get_imid(self,imname):
+		im_id = self.con.execute("select rowid from imlist where filename='%s'" % basename(imname)).fetchone()
+		return im_id
 
 	def get_filename(self,imid):
 		""" Return the filename for an image id"""

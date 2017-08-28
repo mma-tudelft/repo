@@ -73,7 +73,7 @@ def mfcc(input, nwin=256, nfft=512, fs=16000, nceps=13):
            spoken sentences", IEEE Trans. Acoustics. Speech, Signal Proc.
            ASSP-28 (4): 357-366, August 1980."""
 
-    # MFCC parameters: taken from auditory toolbox. Delft: Changed to allow variable sample ratesS
+    # MFCC parameters: taken from auditory toolbox. Changed from talkbox version to allow variable sample rates
     over = nwin/2
     # Pre-emphasis factor (to take into account the -6dB/octave rolloff of the
     # radiation at the lips level)
@@ -84,6 +84,9 @@ def mfcc(input, nwin=256, nfft=512, fs=16000, nceps=13):
     #highfreq = 6855.4976
     linsc = 200/3.
     logsc = 1.0711703
+    
+    fsMax=8000
+    fsMaxSample=int(nfft*(fsMax/(fs*1.0)))
 
     nlinfil = 13
     nlogfil = 27
@@ -91,7 +94,7 @@ def mfcc(input, nwin=256, nfft=512, fs=16000, nceps=13):
 
     w = hamming(nwin, sym=0)
 
-    fbank = trfbank(fs, nfft, lowfreq, linsc, logsc, nlinfil, nlogfil)[0]
+    fbank = trfbank(fsMax, fsMaxSample, lowfreq, linsc, logsc, nlinfil, nlogfil)[0]
 
     #------------------
     # Compute the MFCC
@@ -100,7 +103,7 @@ def mfcc(input, nwin=256, nfft=512, fs=16000, nceps=13):
     framed = segment_axis(extract, nwin, over) * w
 
     # Compute the spectrum magnitude
-    spec = np.abs(fft(framed, nfft, axis=-1))
+    spec = np.abs(fft(framed, nfft, axis=-1))[:,:fsMaxSample]
     # Filter the spectrum through the triangle filterbank
     mspec = np.log10(np.dot(spec, fbank.T))
     # Use the DCT to 'compress' the coefficients (spectrum -> cepstrum domain)

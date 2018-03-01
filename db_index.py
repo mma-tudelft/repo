@@ -73,16 +73,16 @@ class Indexer(object):
     def is_indexed(self, imname):
         """ Returns True is imname has been indexed. """
 
-        im = self.con.execute("select rowid from imlist where filename='%s'" % basename(imname)).fetchone()
+        im = self.con.execute("select rowid from imlist where filename='%s'" % imname).fetchone()
         return im != None
 
     def get_id(self, imname):
         """ Get an entry id and add if not present. """
 
-        cur = self.con.execute("select rowid from imlist where filename='%s'" % basename(imname))
+        cur = self.con.execute("select rowid from imlist where filename='%s'" % imname)
         res = cur.fetchone()
         if res == None:
-            cur = self.con.execute("insert into imlist(filename) values ('%s')" % basename(imname))
+            cur = self.con.execute("insert into imlist(filename) values ('%s')" % imname)
             return cur.lastrowid
         else:
             return res[0]

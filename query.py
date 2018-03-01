@@ -127,9 +127,10 @@ if __name__ == '__main__':
         fig = plt.figure()
         i = 1
         for im_name in im_list:
-            geotag = ft.extract_exif(im_name)
+            print(im_name)            
+            geotag = ft.extract_exif('../Images/database_image/' + im_name)
             print i, im_name, '\t\tgeotag:', geotag, '\tdist: ', distance[i-1]
-            im = cv2.imread(im_name, cv2.IMREAD_COLOR)
+            im = cv2.imread('../Images/database_image/' + im_name, cv2.IMREAD_COLOR)
             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
             plt.subplot(2,5,i)
             plt.imshow(im)

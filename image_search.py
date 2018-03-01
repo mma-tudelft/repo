@@ -55,7 +55,7 @@ class Searcher:
 
 	def get_colorhist(self, imname):
 		""" Return the color histogram for an image. """
-		im_id = get_imid(imname)
+		im_id = self.get_imid(imname)
 		s = self.con.execute(
 				"select hist from colorhists where rowid='%d'" % im_id).fetchone()
 
@@ -67,7 +67,7 @@ class Searcher:
 	def get_imhistogram(self, type, imname):
 		""" Return the word histogram for an image. """
 
-		im_id = get_imid(imname)
+		im_id = self.get_imid(imname)
 		s = self.con.execute(
 				"select histogram from "+type+"_imhistograms where rowid='%d'" % im_id).fetchone()
 
@@ -79,6 +79,7 @@ class Searcher:
 
 		h = self.get_imhistogram(imname)
 		candidates = self.candidates_from_histogram(type,h)
+        
 
 		matchscores = []
 		for imid in candidates:
@@ -96,12 +97,14 @@ class Searcher:
 	def query_iw(self,type, h):
 		""" Find a list of matching images for image histogram h"""
 		candidates = self.candidates_from_histogram(type,h)
+		print(candidates)        
 		matchscores = []
 		for imid in candidates:
 			# get the name
 			cand_name = self.con.execute(
 							"select filename from imlist where rowid=%d" % imid).fetchone()
-			cand_h = self.get_imhistogram(type, cand_name)
+
+			cand_h = self.get_imhistogram(type, cand_name[0])
 
 			cand_dist = np.sqrt( np.sum( (h-cand_h)**2 ) ) #use L2 distance
 			matchscores.append( (cand_dist, imid) )
@@ -110,7 +113,7 @@ class Searcher:
 		return matchscores
     
 	def get_imid(self,imname):
-		im_id = self.con.execute("select rowid from imlist where filename='%s'" % basename(imname)).fetchone()
+		im_id = self.con.execute("select rowid from imlist where filename='%s'" % imname).fetchone()
 		return im_id
 
 	def get_filename(self,imid):

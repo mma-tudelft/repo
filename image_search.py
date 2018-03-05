@@ -30,7 +30,7 @@ class Searcher:
 		for key in features.keys():
 			d = np.sum((hist-features[key])**2)
 			result.append(d)
-			names.append(key)
+			names.append(basename(key))
 		i = np.argsort(result)
 		return (np.array(names)[i] , np.array(result)[i])
 

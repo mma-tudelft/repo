@@ -88,7 +88,7 @@ if __name__ == '__main__':
         print 'Query database with a colorhistogram'
         # Compare the query colorhist with the dataset and retrieve an ordered list of candidates
         colorhist_candidates = search.candidates_from_colorhist(colorhist_query, colorhist_features)
-    
+        
     if feature_active('geo'):
         print 'Load geo data ..'
         fname = base + '_meta.pkl'
@@ -128,9 +128,9 @@ if __name__ == '__main__':
         i = 1
         for im_name in im_list:
             print(im_name)            
-            geotag = ft.extract_exif('../Images/database_image/' + im_name)
+            geotag = ft.extract_exif(im_name)
             print i, im_name, '\t\tgeotag:', geotag, '\tdist: ', distance[i-1]
-            im = cv2.imread('../Images/database_image/' + im_name, cv2.IMREAD_COLOR)
+            im = cv2.imread(im_name, cv2.IMREAD_COLOR)
             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
             plt.subplot(2,5,i)
             plt.imshow(im)
